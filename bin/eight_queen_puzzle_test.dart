@@ -43,7 +43,9 @@ void main() {
 class Puzzle {
   List<Queen> queens = [];
 
-  bool isSolved() { return false; }
+  bool isSolved() {
+    return false;
+  }
 
   void addQueen(int line, int column) {
     if (line <= 0 || line > 8 || column <= 0 || column > 8) {
@@ -63,5 +65,5 @@ class Queen {
   int row;
   int column;
 
-  Queen(this.row,this.column);
+  Queen(this.row, this.column);
 }
