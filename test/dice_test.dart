@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'dice.dart';
+import 'package:first_step/dice.dart';
 
 void main() {
   late Dice dice;
