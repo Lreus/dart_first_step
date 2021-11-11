@@ -1,8 +1,10 @@
-import 'package:test/test.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 import 'dart:async';
 import 'dart:io';
+
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:test/test.dart';
+
 import 'file_account_manager_test.mocks.dart';
 
 @GenerateMocks([FileSystemManager])
@@ -16,7 +18,7 @@ void main() {
   });
 
   test('creating a file to hold an account', () async {
-    var accountFullPath = '${Directory.current.path}/test/var/newAccount';
+    var accountFullPath = 'any-path/newAccount';
     when(mockedFileSystem.create(accountFullPath))
         .thenAnswer((_) async => File(''));
 
