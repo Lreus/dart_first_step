@@ -12,5 +12,7 @@ environment:
 
 dev_dependencies:
   lints: ^1.0.0
-dependencies: 
   test: ^1.19.3
+  mockito: ^5.0.16
+  build_runner: ^2.1.5
+dependencies: ~
