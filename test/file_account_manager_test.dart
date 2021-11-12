@@ -9,23 +9,48 @@ import 'file_account_manager_test.mocks.dart';
 
 @GenerateMocks([FileSystemManager])
 void main() {
-  late FileSystemManager mockedFileSystem;
+  late MockFileSystemManager mockedFileSystem;
   late FileAccountManager accountManager;
+  String accountFullPath = 'any-path/newAccount';
+
+  Future<bool> createAccount(path) async {
+    return accountManager.create(path);
+  }
+
+  void fileCreationWillSucceed(path) {
+    when(mockedFileSystem.create(path)).thenAnswer((_) async => File(''));
+  }
+
+  void fileCreationWillFail(path) {
+    when(mockedFileSystem.create(path)).thenThrow(FileSystemException('file could not be created'));
+  }
 
   setUp(() {
     mockedFileSystem = MockFileSystemManager();
     accountManager = FileAccountManager(mockedFileSystem);
   });
 
-  test('creating a file to hold an account', () async {
-    var accountFullPath = 'any-path/newAccount';
-    when(mockedFileSystem.create(accountFullPath))
-        .thenAnswer((_) async => File(''));
+  group('Given file creation is a success', () {
+    test('it triggers a file creation', () async {
+      fileCreationWillSucceed(accountFullPath);
+      await createAccount(accountFullPath);
 
-    bool managerResult = await accountManager.create(accountFullPath);
+      verify(mockedFileSystem.create(accountFullPath));
+    });
 
-    verify(mockedFileSystem.create(accountFullPath));
-    expect(managerResult, isTrue);
+    test('it returns true', () async {
+      fileCreationWillSucceed(accountFullPath);
+
+      expect(await createAccount(accountFullPath), isTrue);
+    });
+  });
+
+  group('Given FileSystemException occurs', () {
+    test('it returns false', () async {
+      fileCreationWillFail(accountFullPath);
+
+      expect(await createAccount(accountFullPath), isFalse);
+    });
   });
 }
 
@@ -44,11 +69,9 @@ class FileAccountManager {
   Future<bool> create(String name) async {
     try {
       await systemManager.create(name);
-
       return true;
-    } on FileSystemException {
-      print('error creating file');
-
+    }
+    on FileSystemException {
       return false;
     }
   }
