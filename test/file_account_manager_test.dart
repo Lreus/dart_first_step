@@ -22,12 +22,28 @@ void main() {
   }
 
   void fileCreationWillFail(path) {
-    when(mockedFileSystem.create(path)).thenThrow(FileSystemException('file could not be created'));
+    when(mockedFileSystem.create(path))
+        .thenThrow(FileSystemException('file could not be created'));
   }
 
   setUp(() {
     mockedFileSystem = MockFileSystemManager();
     accountManager = FileAccountManager(mockedFileSystem);
+  });
+
+  group('Degenerate cases', () {
+    test('it raises argument error', () {
+      expect(
+          () async => await createAccount('  '), throwsA(isA<ArgumentError>()));
+    });
+  });
+
+  group('Given FileSystemException occurs', () {
+    test('it returns false', () async {
+      fileCreationWillFail(accountFullPath);
+
+      expect(await createAccount(accountFullPath), isFalse);
+    });
   });
 
   group('Given file creation is a success', () {
@@ -42,14 +58,6 @@ void main() {
       fileCreationWillSucceed(accountFullPath);
 
       expect(await createAccount(accountFullPath), isTrue);
-    });
-  });
-
-  group('Given FileSystemException occurs', () {
-    test('it returns false', () async {
-      fileCreationWillFail(accountFullPath);
-
-      expect(await createAccount(accountFullPath), isFalse);
     });
   });
 }
@@ -67,11 +75,14 @@ class FileAccountManager {
   FileAccountManager(this.systemManager);
 
   Future<bool> create(String name) async {
+    if (name.trim().isEmpty) {
+      throw ArgumentError('Argument name is required');
+    }
+
     try {
       await systemManager.create(name);
       return true;
-    }
-    on FileSystemException {
+    } on FileSystemException {
       return false;
     }
   }
