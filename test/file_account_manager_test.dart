@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:first_step/file_account_manager.dart';
+import 'package:first_step/src/file_system_manager.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -60,30 +62,4 @@ void main() {
       expect(await createAccount(accountFullPath), isTrue);
     });
   });
-}
-
-class FileSystemManager {
-  Future<File> create(fullPath) async {
-    var file = File(fullPath);
-    return file.create();
-  }
-}
-
-class FileAccountManager {
-  FileSystemManager systemManager;
-
-  FileAccountManager(this.systemManager);
-
-  Future<bool> create(String name) async {
-    if (name.trim().isEmpty) {
-      throw ArgumentError('Argument name is required');
-    }
-
-    try {
-      await systemManager.create(name);
-      return true;
-    } on FileSystemException {
-      return false;
-    }
-  }
 }
